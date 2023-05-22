@@ -124,6 +124,10 @@ func GetTarget() (string, string) {
 			arch = macValueCmd(`sysctl -a | grep machdep.cpu.brand_string`)
 			arch = strings.TrimPrefix(arch, "Apple ")
 		}
+	case "riscv64":
+		arch = "RISC-V"
+	case "loong64":
+		arch = "龙芯"
 	}
 
 	target := strings.Join([]string{arch, goos}, ".")
@@ -165,6 +169,8 @@ func systemTitleWindows(title string) string {
 		goos += "8"
 	case strings.Contains(title, "Windows 7"):
 		goos += "7"
+	case strings.Contains(title, "Windows Embedded"):
+		goos += "E"
 	}
 
 	return goos

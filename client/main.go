@@ -51,7 +51,13 @@ func main() {
 	// rpcpd.DebugOn()
 
 	name := strings.Split(os.Args[0], "_")
-	serverAddr := strings.TrimSuffix(name[len(name)-1], ".exe")
+	serverAddr := name[len(name)-1]
+	if strings.HasSuffix(serverAddr, ".exe") {
+		serverAddr = strings.TrimSuffix(serverAddr, ".exe")
+	}
+	if strings.HasSuffix(serverAddr, ".m1") {
+		serverAddr = strings.TrimSuffix(serverAddr, ".m1")
+	}
 	fmt.Printf("serverAddr=%s\n", serverAddr)
 
 	t := time.NewTicker(10 * time.Second)
