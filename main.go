@@ -7,8 +7,12 @@ import (
 	"net/http"
 	"r/pkg/connect"
 	"r2/pkg/generic2/chars/cat"
+	"r2/pkg/generic2/signalgroup"
 	"strings"
+	"time"
 )
+
+var _ = arena.NewArena()
 
 func main() {
 	// rpcpd.DebugOn()
@@ -20,13 +24,23 @@ func main() {
 	}
 	connect.InitDeviceAlias()
 
-	go connect.RunServer()
+	signalgroup.Async(connect.RunServer)
+	signalgroup.Async(webserver)
+	signalgroup.Async(func() error {
+		time.Sleep(3 * time.Hour)
+		return nil
+	})
+
+	signalgroup.Wait(nil)
+}
+
+func webserver() error {
 	http.HandleFunc("/call", connect.CallHandler)
 	http.HandleFunc("/ls", connect.DeviceList)
 	err := http.ListenAndServe(":90", nil)
 	if err != nil {
 		panic(err)
 	}
-}
 
-var mem = arena.NewArena()
+	return nil
+}

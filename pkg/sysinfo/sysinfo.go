@@ -123,6 +123,7 @@ func GetTarget() (string, string) {
 		if goos == "Apple" {
 			arch = macValueCmd(`sysctl -a | grep machdep.cpu.brand_string`)
 			arch = strings.TrimPrefix(arch, "Apple ")
+			arch = strings.ReplaceAll(arch, " ", "_")
 		}
 	case "riscv64":
 		arch = "RISC-V"
@@ -131,12 +132,6 @@ func GetTarget() (string, string) {
 	}
 
 	target := strings.Join([]string{arch, goos}, ".")
-
-	// 保持所有的 target 长度一致
-	n := 13 - len(target)
-	for i := 0; i < n; i++ {
-		target += "."
-	}
 
 	return target, title
 }

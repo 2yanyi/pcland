@@ -40,7 +40,7 @@ func InitDeviceAlias() {
 	}
 }
 
-func RunServer() {
+func RunServer() error {
 	seqx.Init(2)
 
 	var task func() error

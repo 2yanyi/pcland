@@ -87,6 +87,17 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 `)
 
 	for _, info := range slice {
+
+		// 保持所有的 target 长度一致
+		n := 17 - len(info.Target)
+		for i := 0; i < n; i++ {
+			if i == 0 {
+				info.Target += " "
+			} else {
+				info.Target += "."
+			}
+		}
+
 		item := fmt.Sprintf(`
 <div class="ls-item">
     <div class="ls-title">%s %s</div>
