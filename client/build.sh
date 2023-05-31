@@ -9,22 +9,33 @@ fi
 # Default config
 export GOEXPERIMENT=arenas
 export GOARCH=amd64
-export GOAMD64=v3
 
 # Exe name
-APP='pcland'
-IP='211.149.130.119'
+EXE='PCland-@211.149.130.119'
 
 # GNU/Linux
+echo "Build GNU/Linux"
+ldflags='-linkmode "external" -extldflags "-static"'
 export GOOS=linux
-           go build -ldflags '-linkmode "external" -extldflags "-static"' -o ../bin/${APP}64_${IP}
-GOAMD64=v1 go build -ldflags '-linkmode "external" -extldflags "-static"' -o ../bin/${APP}64o_${IP}
+GOAMD64=v3 \
+GOARCH=amd64   go build -ldflags "${ldflags}" -o ../bin/linux/${EXE}.amd64
+GOARCH=amd64   go build -ldflags "${ldflags}" -o ../bin/linux/${EXE}.amd64v1
+GOARCH=386     go build                       -o ../bin/linux/${EXE}.386
+GOARCH=arm64   go build                       -o ../bin/linux/${EXE}.arm64
+GOARCH=loong64 go build                       -o ../bin/linux/${EXE}.loong64
+GOARCH=riscv64 go build                       -o ../bin/linux/${EXE}.riscv64
 
 # Windows
+echo "Build Windows"
 export GOOS=windows
-           go build -ldflags "-H windowsgui" -o ../bin/${APP}64_${IP}.exe
-GOARCH=386 go build -ldflags "-H windowsgui" -o ../bin/${APP}32_${IP}.exe
+GOAMD64=v3 \
+GOARCH=amd64   go build -ldflags "-H windowsgui" -o ../bin/windows/${EXE}.amd64.exe
+GOARCH=amd64   go build -ldflags "-H windowsgui" -o ../bin/windows/${EXE}.amd64v1.exe
+GOARCH=386     go build -ldflags "-H windowsgui" -o ../bin/windows/${EXE}.386.exe
+GOARCH=arm64   go build -ldflags "-H windowsgui" -o ../bin/windows/${EXE}.arm64.exe
 
 # macOS
+echo "Build macOS"
 export GOOS=darwin
-GOARCH=arm64 go build -o ../bin/${APP}64_${IP}.m1
+GOARCH=amd64 go build -o ../bin/apple/${EXE}.amd64
+GOARCH=arm64 go build -o ../bin/apple/${EXE}.arm64

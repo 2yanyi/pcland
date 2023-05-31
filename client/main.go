@@ -50,14 +50,10 @@ func delivery(serverAddr string) {
 func main() {
 	// rpcpd.DebugOn()
 
-	name := strings.Split(os.Args[0], "_")
-	serverAddr := name[len(name)-1]
-	if strings.HasSuffix(serverAddr, ".exe") {
-		serverAddr = strings.TrimSuffix(serverAddr, ".exe")
-	}
-	if strings.HasSuffix(serverAddr, ".m1") {
-		serverAddr = strings.TrimSuffix(serverAddr, ".m1")
-	}
+	imageArgs := strings.Split(os.Args[0], "-@")
+	serverAddr := imageArgs[len(imageArgs)-1]
+	serverAddr = strings.TrimSuffix(serverAddr, ".exe")
+	serverAddr = serverAddr[:strings.LastIndexByte(serverAddr, '.')]
 	fmt.Printf("serverAddr=%s\n", serverAddr)
 
 	t := time.NewTicker(10 * time.Second)
