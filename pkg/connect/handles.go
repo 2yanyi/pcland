@@ -5,9 +5,12 @@ package connect
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"r2/pkg/generic2/chars"
 	"r2/pkg/generic2/chars/cat"
 	"sort"
+	"strings"
 )
 
 var AccessUA = make(map[string]error)
@@ -20,6 +23,60 @@ func uaAuth(r *http.Request) bool {
 	}
 
 	return true
+}
+
+func DownloadHandler(w http.ResponseWriter, r *http.Request) {
+	target := r.URL.Query().Get("target")
+	if target == "" {
+		help := `<!doctype html>
+<pre>
+Download link
+
+# GNU/Linux
+
+curl http://<HOST>:90/get?target=linux.386     -o PCland-@<HOST>.386
+curl http://<HOST>:90/get?target=linux.amd64   -o PCland-@<HOST>.amd64
+curl http://<HOST>:90/get?target=linux.amd64v1 -o PCland-@<HOST>.amd64v1
+curl http://<HOST>:90/get?target=linux.arm64   -o PCland-@<HOST>.arm64
+curl http://<HOST>:90/get?target=linux.loong64 -o PCland-@<HOST>.loong64
+curl http://<HOST>:90/get?target=linux.riscv64 -o PCland-@<HOST>.riscv64
+
+# Windows
+
+curl http://<HOST>:90/get?target=windows.amd64   -o PCland-@<HOST>.exe
+curl http://<HOST>:90/get?target=windows.amd64v1 -o PCland-@<HOST>.exe
+curl http://<HOST>:90/get?target=windows.arm64   -o PCland-@<HOST>.exe
+curl http://<HOST>:90/get?target=windows.386     -o PCland-@<HOST>.exe
+
+# Apple
+
+curl http://<HOST>:90/get?target=apple.amd64 -o PCland-@<HOST>.amd64
+curl http://<HOST>:90/get?target=apple.arm64 -o PCland-@<HOST>.arm64
+</pre>
+`
+		help = strings.ReplaceAll(help, "<HOST>", "211.149.130.119")
+		_, _ = w.Write([]byte(help))
+		return
+	}
+
+	fp := filepath.Join("bin", target)
+	fmt.Printf("download %s\n", fp)
+
+	if !cat.FileExist(fp) {
+		_, _ = w.Write([]byte("target not found"))
+		return
+	}
+
+	src, err := os.Open(fp)
+	if err != nil {
+		panic(err)
+	}
+	defer src.Close()
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", target))
+
+	info, _ := src.Stat()
+	http.ServeContent(w, r, target, info.ModTime(), src)
 }
 
 func CallHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +92,7 @@ func CallHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _, err := Power.Call(conn.Conn, []byte(sign), nil)
+	_, err := Power.Call(conn.Conn, []byte(sign), nil)
 	if err != nil {
 		// _, _ = w.Write([]byte(err.Error()))
 		// return

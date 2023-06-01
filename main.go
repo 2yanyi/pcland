@@ -35,6 +35,7 @@ func main() {
 }
 
 func webserver() error {
+	http.HandleFunc("/get", connect.DownloadHandler)
 	http.HandleFunc("/call", connect.CallHandler)
 	http.HandleFunc("/ls", connect.DeviceList)
 	err := http.ListenAndServe(":90", nil)

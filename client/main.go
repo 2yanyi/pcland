@@ -52,7 +52,6 @@ func main() {
 
 	imageArgs := strings.Split(os.Args[0], "-@")
 	serverAddr := imageArgs[len(imageArgs)-1]
-	serverAddr = strings.TrimSuffix(serverAddr, ".exe")
 	serverAddr = serverAddr[:strings.LastIndexByte(serverAddr, '.')]
 	fmt.Printf("serverAddr=%s\n", serverAddr)
 

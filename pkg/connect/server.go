@@ -91,7 +91,7 @@ func addConnection(conn *rpcpd.Conn) bool {
 	time.Sleep(3 * time.Second)
 
 	// call client get device info.
-	_, resp, err := Power.Call(conn, []byte(FunctionSignGetDeviceInfo), nil)
+	resp, err := Power.Call(conn, []byte(FunctionSignGetDeviceInfo), nil)
 	if err != nil {
 		fmt.Printf("failed call: %s\n", err)
 		return false
