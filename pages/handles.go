@@ -1,6 +1,6 @@
 // Source code file, created by Developer@YANYINGSONG.
 
-package server
+package pages
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"r/device"
+	"r/server"
 	"r2/pkg/generic2/chars"
 	"sort"
 	"strings"
@@ -92,7 +93,7 @@ func CallHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := Power.Call(conn.Conn, []byte(sign), nil)
+	_, err := server.Power.Call(conn.Conn, []byte(sign), nil)
 	if err != nil {
 		// _, _ = w.Write([]byte(err.Error()))
 		// return

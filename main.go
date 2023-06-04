@@ -5,6 +5,7 @@ package main
 import (
 	"arena"
 	"net/http"
+	"r/pages"
 	"r/server"
 	"r2/pkg/generic2/chars"
 	"r2/pkg/generic2/signalgroup"
@@ -27,7 +28,7 @@ func main() {
 
 	for _, line := range strings.Split(chars.CatString("ua.txt"), "\n") {
 		if line != "" {
-			server.AccessUA[line] = nil
+			pages.AccessUA[line] = nil
 		}
 	}
 	server.InitDeviceAlias()
@@ -43,9 +44,9 @@ func main() {
 }
 
 func webserver() error {
-	http.HandleFunc("/get", server.DownloadHandler)
-	http.HandleFunc("/call", server.CallHandler)
-	http.HandleFunc("/ls", server.DeviceList)
+	http.HandleFunc("/get", pages.DownloadHandler)
+	http.HandleFunc("/call", pages.CallHandler)
+	http.HandleFunc("/ls", pages.DeviceList)
 	err := http.ListenAndServe(":90", nil)
 	if err != nil {
 		panic(err)

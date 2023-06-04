@@ -1,6 +1,6 @@
 // Source code file, created by Developer@YANYINGSONG.
 
-package server
+package pages
 
 const htmlHeader = `
 <!doctype html>
