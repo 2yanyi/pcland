@@ -5,9 +5,10 @@ package main
 import (
 	"arena"
 	"net/http"
-	"r/pkg/connect"
-	"r2/pkg/generic2/chars/cat"
+	"r/server"
+	"r2/pkg/generic2/chars"
 	"r2/pkg/generic2/signalgroup"
+	"r2/pkg/utils/console"
 	"strings"
 	"time"
 )
@@ -17,14 +18,21 @@ var _ = arena.NewArena()
 func main() {
 	// rpcpd.DebugOn()
 
-	for _, line := range strings.Split(cat.String("ua.txt"), "\n") {
+	defer console.New(&console.Options{
+		Info: true, Debug: true, Warning: true, Error: true, Print: true,
+		LogFileSizeMB: 100,
+		MaxBackups:    10,
+		Filename:      "log/execution.log",
+	}).Wait()
+
+	for _, line := range strings.Split(chars.CatString("ua.txt"), "\n") {
 		if line != "" {
-			connect.AccessUA[line] = nil
+			server.AccessUA[line] = nil
 		}
 	}
-	connect.InitDeviceAlias()
+	server.InitDeviceAlias()
 
-	signalgroup.Async(connect.RunServer)
+	signalgroup.Async(server.RunServer)
 	signalgroup.Async(webserver)
 	signalgroup.Async(func() error {
 		time.Sleep(3 * time.Hour)
@@ -35,9 +43,9 @@ func main() {
 }
 
 func webserver() error {
-	http.HandleFunc("/get", connect.DownloadHandler)
-	http.HandleFunc("/call", connect.CallHandler)
-	http.HandleFunc("/ls", connect.DeviceList)
+	http.HandleFunc("/get", server.DownloadHandler)
+	http.HandleFunc("/call", server.CallHandler)
+	http.HandleFunc("/ls", server.DeviceList)
 	err := http.ListenAndServe(":90", nil)
 	if err != nil {
 		panic(err)

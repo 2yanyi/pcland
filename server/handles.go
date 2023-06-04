@@ -1,14 +1,14 @@
 // Source code file, created by Developer@YANYINGSONG.
 
-package connect
+package server
 
 import (
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"r/device"
 	"r2/pkg/generic2/chars"
-	"r2/pkg/generic2/chars/cat"
 	"sort"
 	"strings"
 )
@@ -43,10 +43,10 @@ curl http://<HOST>:90/get?target=linux.riscv64 -o PCland-@<HOST>.riscv64
 
 # Windows
 
+curl http://<HOST>:90/get?target=windows.386     -o PCland-@<HOST>.exe
 curl http://<HOST>:90/get?target=windows.amd64   -o PCland-@<HOST>.exe
 curl http://<HOST>:90/get?target=windows.amd64v1 -o PCland-@<HOST>.exe
 curl http://<HOST>:90/get?target=windows.arm64   -o PCland-@<HOST>.exe
-curl http://<HOST>:90/get?target=windows.386     -o PCland-@<HOST>.exe
 
 # Apple
 
@@ -62,7 +62,7 @@ curl http://<HOST>:90/get?target=apple.arm64 -o PCland-@<HOST>.arm64
 	fp := filepath.Join("bin", target)
 	fmt.Printf("download %s\n", fp)
 
-	if !cat.FileExist(fp) {
+	if !chars.FileExist(fp) {
 		_, _ = w.Write([]byte("target not found"))
 		return
 	}
@@ -86,7 +86,7 @@ func CallHandler(w http.ResponseWriter, r *http.Request) {
 
 	sign := r.URL.Query().Get("f")
 	addr := r.URL.Query().Get("a")
-	conn, ok := ConnectionPool[addr]
+	conn, ok := device.Pool[addr]
 	if !ok {
 		_, _ = w.Write(append([]byte(htmlHeader), []byte(`<h1>操作失败</h1>`)...))
 		return
@@ -106,8 +106,8 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slice := make([]*DeviceInfo, 0, len(ConnectionPool))
-	for _, info := range ConnectionPool {
+	slice := make([]*device.DeviceInfo, 0, len(device.Pool))
+	for _, info := range device.Pool {
 		slice = append(slice, info)
 	}
 	sort.Slice(slice, func(i, j int) bool {
@@ -164,7 +164,7 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 <hr>
 `,
 			icon, info.Model, info.Tid,
-			cat.SizeFormat(float64(info.Power)), info.Target,
+			chars.SizeFormat(float64(info.Power)), info.Target,
 			info.Addr,
 		)
 		ls.WriteString(item)

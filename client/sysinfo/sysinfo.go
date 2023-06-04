@@ -6,7 +6,7 @@ import (
 	"github.com/klauspost/cpuid/v2"
 	"net"
 	"os/exec"
-	"r2/pkg/generic2/chars/cat"
+	"r2/pkg/generic2/chars"
 	"runtime"
 	"strings"
 )
@@ -14,7 +14,7 @@ import (
 const __unknown = "unknown"
 
 func wmicValue(script string) string {
-	ls := strings.Split(cat.CmdC("", script), "\n")
+	ls := strings.Split(chars.CmdC("", script), "\n")
 	for i := 0; i < len(ls); i++ {
 		if i == 1 {
 			value := strings.TrimSpace(ls[i])
@@ -29,8 +29,8 @@ func wmicValue(script string) string {
 }
 
 func unixValue(fp string) string {
-	if cat.FileExist(fp) {
-		value := strings.TrimSpace(cat.String(fp))
+	if chars.FileExist(fp) {
+		value := strings.TrimSpace(chars.CatString(fp))
 		if value != "" {
 			return value
 		}

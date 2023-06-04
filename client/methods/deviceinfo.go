@@ -1,15 +1,11 @@
-// Source code file, created by Developer@YANYINGSONG.
-
-package connect
+package methods
 
 import (
 	"github.com/google/uuid"
 	"os"
-	"r/pkg/cpower"
-	"r/pkg/syscontrol"
-	"r/pkg/sysinfo"
+	"r/client/sysinfo"
+	"r/device"
 	"r2/pkg/generic2/chars"
-	"r2/pkg/generic2/chars/cat"
 	"runtime"
 	"time"
 )
@@ -21,7 +17,7 @@ func GetTerminalID() string {
 	}
 
 again:
-	tid := cat.String(idFp)
+	tid := chars.CatString(idFp)
 	if tid == "" {
 		if err := os.WriteFile(idFp, []byte(uuid.New().String()), 0666); err != nil {
 			panic(err)
@@ -32,14 +28,14 @@ again:
 	return tid
 }
 
-const FunctionSignGetDeviceInfo = "client.deviceInfo"
+const SignGetDeviceInfo = "client.deviceInfo"
 
 func GetDeviceInfo(data []byte) ([]byte, error) {
 
 	target, title := sysinfo.GetTarget()
 
-	info := &DeviceInfo{
-		Power:  int(cpower.CPUPower()),
+	info := &device.DeviceInfo{
+		Power:  int(CPUPower()),
 		Target: target,
 		OS:     title,
 		Model:  sysinfo.GetProductName(),
@@ -50,19 +46,37 @@ func GetDeviceInfo(data []byte) ([]byte, error) {
 	return chars.ToJsonBytes(info, ""), nil
 }
 
-const FunctionSignRestart = "client.restart"
+func CPUPower() (count int32) {
+	go func() {
+		defer func() {
+			println("POWER", count)
+			if err := recover(); err != nil {
+			}
+		}()
+		off = false
+		for i := 2; ; i++ {
+			if fibonacci(i, &count) == 0 {
+				return
+			}
+		}
+	}()
+	time.Sleep(time.Second)
+	off = true
 
-func Restart(data []byte) ([]byte, error) {
-	return nil, syscontrol.Restart()
+	return
 }
 
-const FunctionSignShutdown = "client.shutdown"
+func fibonacci(n int, count *int32) int {
+	*count++
 
-func Shutdown(data []byte) ([]byte, error) {
-	__work := func() {
-		time.Sleep(time.Second)
-		syscontrol.Shutdown()
+	if off {
+		return 0
 	}
-	go __work()
-	return nil, nil
+	if n < 2 {
+		return 1
+	}
+
+	return fibonacci(n-1, count) + fibonacci(n-2, count)
 }
+
+var off bool

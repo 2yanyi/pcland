@@ -6,7 +6,8 @@ import (
 	"arena"
 	"fmt"
 	"os"
-	"r/pkg/connect"
+	methods "r/client/methods"
+	"r/server"
 	"rpcpd"
 	"rpcpd/seqx"
 	"strings"
@@ -20,7 +21,7 @@ func runClient(serverAddr string) func() {
 	seqx.Init(1)
 
 	var err error
-	client, err = rpcpd.Connect(serverAddr + connect.ServerListenPort)
+	client, err = rpcpd.Connect(serverAddr + server.ListenPort)
 	if err != nil {
 		fmt.Printf("failed: %s\n", err.Error())
 	}
@@ -39,12 +40,14 @@ func delivery(serverAddr string) {
 	if client == nil {
 		return
 	}
-	rpcpd.AddFunction(connect.FunctionSignGetDeviceInfo, connect.GetDeviceInfo)
-	rpcpd.AddFunction(connect.FunctionSignShutdown, connect.Shutdown)
-	rpcpd.AddFunction(connect.FunctionSignRestart, connect.Restart)
+	rpcpd.AddFunction(methods.SignPing, methods.Ping)
+	rpcpd.AddFunction(methods.SignGetDeviceInfo, methods.GetDeviceInfo)
+	rpcpd.AddFunction(methods.SignRestart, methods.Restart)
 
 	// 保持长连接
-	client.ConnectionProcessor(nil)
+	if err := client.ConnectionProcessor(nil); err != nil {
+		fmt.Printf("error: %s\n", err)
+	}
 }
 
 func main() {
