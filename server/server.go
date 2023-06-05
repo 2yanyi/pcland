@@ -5,11 +5,11 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	methods2 "r/client/methods"
+	"library/console"
+	"library/generic/chars"
+	"library/generic/errcause"
+	"r/client/methods"
 	"r/device"
-	"r2/pkg/generic2/chars"
-	"r2/pkg/generic2/errcause"
-	"r2/pkg/utils/console"
 	"rpcpd"
 	"rpcpd/seqx"
 	"strings"
@@ -40,7 +40,7 @@ func addConnection(conn *rpcpd.Conn) bool {
 	time.Sleep(3 * time.Second)
 
 	// call client get device info.
-	resp, err := Power.Call(conn, []byte(methods2.SignGetDeviceInfo), nil)
+	resp, err := Power.Call(conn, []byte(methods.SignGetDeviceInfo), nil)
 	if err != nil {
 		console.ERROR(fmt.Errorf("failed call: %s", err))
 		return false
@@ -93,27 +93,27 @@ func RunServer() error {
 			continue
 		}
 
-		go acceptConnectionAdd(conn)
-		go acceptConnectionLive(conn)
-		go acceptConnectionPing(conn)
+		go connectionAdd(conn)
+		go connectionLive(conn)
+		go connectionPing(conn)
 	}
 }
 
-func acceptConnectionAdd(conn *rpcpd.Conn) {
+func connectionAdd(conn *rpcpd.Conn) {
 	defer errcause.Recover()
 	if !addConnection(conn) {
 		conn.Channel.Close()
 	}
 }
 
-func acceptConnectionLive(conn *rpcpd.Conn) {
+func connectionLive(conn *rpcpd.Conn) {
 	defer errcause.Recover()
 	if err := Power.ConnectionProcessor(conn); err != nil {
 		console.WARN(err.Error())
 	}
 }
 
-func acceptConnectionPing(conn *rpcpd.Conn) {
+func connectionPing(conn *rpcpd.Conn) {
 	defer errcause.Recover()
 	defer deleteConnection(conn)
 
@@ -121,8 +121,8 @@ func acceptConnectionPing(conn *rpcpd.Conn) {
 	defer t.Stop()
 
 	for range t.C {
-		pong, _ := Power.Call(conn, []byte(methods2.SignPing), nil)
-		if string(pong) != methods2.SignPingRET {
+		pong, _ := Power.Call(conn, []byte(methods.SignPing), nil)
+		if string(pong) != methods.SignPingRET {
 			return
 		}
 	}

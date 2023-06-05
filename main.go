@@ -4,12 +4,12 @@ package main
 
 import (
 	"arena"
+	"library/console"
+	"library/generic/chars"
+	"library/generic/signalgroup"
 	"net/http"
 	"r/pages"
 	"r/server"
-	"r2/pkg/generic2/chars"
-	"r2/pkg/generic2/signalgroup"
-	"r2/pkg/utils/console"
 	"strings"
 	"time"
 )

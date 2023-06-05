@@ -4,12 +4,13 @@ package pages
 
 import (
 	"fmt"
+	"library/console"
+	"library/generic/chars"
 	"net/http"
 	"os"
 	"path/filepath"
 	"r/device"
 	"r/server"
-	"r2/pkg/generic2/chars"
 	"sort"
 	"strings"
 )
@@ -19,7 +20,7 @@ var AccessUA = make(map[string]error)
 func uaAuth(r *http.Request) bool {
 	ua := r.Header.Get("User-Agent")
 	if _, ok := AccessUA[ua]; !ok {
-		fmt.Printf("%s\n", ua)
+		console.INFO("%s", ua)
 		return false
 	}
 
@@ -103,6 +104,7 @@ func CallHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
+	// fmt.Printf("%s\n", chars.ToJsonBytes(r.Header, "  "))
 	if !uaAuth(r) {
 		return
 	}

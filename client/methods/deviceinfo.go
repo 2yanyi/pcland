@@ -2,10 +2,10 @@ package methods
 
 import (
 	"github.com/google/uuid"
+	"library/generic/chars"
 	"os"
 	"r/client/sysinfo"
 	"r/device"
-	"r2/pkg/generic2/chars"
 	"runtime"
 	"time"
 )

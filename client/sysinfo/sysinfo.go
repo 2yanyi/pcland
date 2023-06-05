@@ -4,9 +4,9 @@ package sysinfo
 
 import (
 	"github.com/klauspost/cpuid/v2"
+	"library/generic/chars"
 	"net"
 	"os/exec"
-	"r2/pkg/generic2/chars"
 	"runtime"
 	"strings"
 )

@@ -5,6 +5,7 @@ package main
 import (
 	"arena"
 	"fmt"
+	"library/generic/errcause"
 	"os"
 	methods "r/client/methods"
 	"r/server"
@@ -45,6 +46,11 @@ func delivery(serverAddr string) {
 	rpcpd.AddFunction(methods.SignRestart, methods.Restart)
 
 	// 保持长连接
+	connectionLive()
+}
+
+func connectionLive() {
+	defer errcause.Recover()
 	if err := client.ConnectionProcessor(nil); err != nil {
 		fmt.Printf("error: %s\n", err)
 	}
